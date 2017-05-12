@@ -247,10 +247,10 @@ border-radius: 10px;
 </head>
 <body>
 	<script src="game_json.js"></script>
-	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/masonry/3.1.2/masonry.pkgd.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/3.1.2/masonry.pkgd.js"></script>
 	
 
 	<div id="mainbox">
@@ -273,7 +273,7 @@ border-radius: 10px;
 
 			<div class="gameDetailsHeader">
 				<div class="gameDetailsLeft"><div class="gameName"><h2></h2></div></div>
-				<div class="gameDetailsRight"><div class="buyButtonCont"><a href="#"><div class="buyButton"><img src="http://store.steampowered.com/favicon.ico" /> Buy on Steam</div></a></div></div>
+				<div class="gameDetailsRight"><div class="buyButtonCont"><a href="#"><div class="buyButton"><img src="https://store.steampowered.com/favicon.ico" /> Buy on Steam</div></a></div></div>
 			</div>
 			<div>
 				<div class="gameDetailsLeft"><div class="bigScreen"><div class="bsItems"></div></div></div>
@@ -491,20 +491,20 @@ border-radius: 10px;
 		currentBigScreenImg = null;
 		bigScreenImages = {};
 
-		$('.buyButtonCont a').attr('href', 'http://store.steampowered.com/app/'+appid.toString());
+		$('.buyButtonCont a').attr('href', 'https://store.steampowered.com/app/'+appid.toString());
 
 		game.pics.forEach( function( screenshot ) {
 			if (first == null)
 			{
-				first = 'http://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+screenshot.shot;
+				first = 'https://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+screenshot.shot;
 			}
 
 			var shotName = screenshot.shot.split('.')[0];
-			var url = 'http://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+shotName+'.116x65.jpg';
+			var url = 'https://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+shotName+'.116x65.jpg';
 
 			var picHolder = $('<a>').attr('href', '#').click( function( ev ) {
 				ev.preventDefault();
-				showBigScreenImg( 'http://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+screenshot.shot );
+				showBigScreenImg( 'https://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+screenshot.shot );
 
 			}).appendTo( gameShots );
 
@@ -536,7 +536,7 @@ border-radius: 10px;
 		bucket.shots.forEach( function( shot )
 		{
 			var shotName = shot.shot.split('.')[0];
-			var url = 'http://cdn.steampowered.com/v/gfx/apps/'+shot.app.toString()+'/'+shotName+'.116x65.jpg';
+			var url = 'https://cdn.steampowered.com/v/gfx/apps/'+shot.app.toString()+'/'+shotName+'.116x65.jpg';
 
 			var item = $('<div>').addClass('listItem')
 
