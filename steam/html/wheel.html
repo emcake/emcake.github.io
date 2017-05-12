@@ -1,0 +1,728 @@
+<html>
+<head><title>Wheel test</title>
+<style>
+body
+{
+	background-color: #222;
+	font-family: sans-serif;
+	color: #eee;
+	overflow: hidden;
+}
+
+a{
+	color: #fff;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+svg {
+	position: relative;
+	top: 50px;
+	left: 50px;
+}
+svg text {
+	fill: #fff;
+	font-family: sans-serif;
+	text-anchor: middle;
+}
+
+#mainbox {
+	height: 100%;
+}
+
+#left {
+    width:600px;
+    float:left;
+}
+
+#right {
+    position: absolute;
+    left: 750px;
+    width: auto;
+    height: 100%;
+    margin-left: 50px;
+    float:right;
+    overflow-y: scroll;
+}
+
+.divider{
+    position:absolute;
+    left:700px;
+    top:10%;
+    bottom:10%;
+    border-left:1px solid #eee;
+}
+
+.listItem {
+	padding: 5px;
+	margin: 2px;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #333), color-stop(1, #2a2a2a) );
+	background:-moz-linear-gradient( center top, #333 5%, #2a2a2a 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#333333', endColorstr='#2a2a2a');
+	background-color:#333;
+	border-radius: 5px;
+	text-indent:0;
+	border:1px solid #333;
+	display:inline-block;
+	color:#eee;
+	min-width: 50px;
+	min-height: 50px;
+}
+
+#gamecontainer
+{
+	position: absolute;
+	width: 100%;
+	height: 90%;
+	margin: 0;
+	padding: 0;
+	top: 0;
+	left: 0;
+}
+
+#midfloat {
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
+
+#midoff {
+	width: 650;
+	height: 400;
+	background-color: #333;
+	left: -325px;
+	top: -200px;
+	position: relative;
+	border-radius: 5px;
+	border: 1px solid #444;
+	padding: 15px;
+}
+
+.gameDetailsLeft
+{
+	float: left;
+	width: 500px;
+}
+
+.gameDetailsRight
+{
+	float: right;
+}
+
+.gameDetailsHeader
+{
+	min-height: 60px;
+}
+
+.gameName h2
+{
+	display: inline;
+	overflow: none;
+}
+
+.gameName
+{
+
+}
+
+.buyButtonCont
+{
+	margin-bottom: 10px;
+	height: 30px;
+}
+
+.gameShots {
+	width: 125px;
+	height: 340px;
+	float: right;
+	overflow-y: scroll;
+}
+
+.gameShotItem img {
+	width: 100px;
+}
+
+.bigScreen {
+
+}
+
+.bigScreenItem {
+	width: 500px;
+	position: absolute;
+}
+
+.buyButton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #d9fbbe;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #d9fbbe;
+	box-shadow:inset 0px 1px 0px 0px #d9fbbe;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b8e356), color-stop(1, #a5cc52) );
+	background:-moz-linear-gradient( center top, #b8e356 5%, #a5cc52 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b8e356', endColorstr='#a5cc52');
+	background-color:#b8e356;
+	-webkit-border-top-left-radius:3px;
+	-moz-border-radius-topleft:3px;
+	border-top-left-radius:3px;
+	-webkit-border-top-right-radius:3px;
+	-moz-border-radius-topright:3px;
+	border-top-right-radius:3px;
+	-webkit-border-bottom-right-radius:3px;
+	-moz-border-radius-bottomright:3px;
+	border-bottom-right-radius:3px;
+	-webkit-border-bottom-left-radius:3px;
+	-moz-border-radius-bottomleft:3px;
+	border-bottom-left-radius:3px;
+	text-indent:0;
+	border:1px solid #83c41a;
+	display:inline-block;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:15px;
+	font-weight:normal;
+	font-style:normal;
+	height:32px;
+	line-height:32px;
+	width:131px;
+	text-decoration:none;
+	text-align:center;
+	text-shadow:1px 1px 0px #86ae47;
+}
+.buyButton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #a5cc52), color-stop(1, #b8e356) );
+	background:-moz-linear-gradient( center top, #a5cc52 5%, #b8e356 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#a5cc52', endColorstr='#b8e356');
+	background-color:#a5cc52;
+}
+.buyButton:active {
+	position:relative;
+	top:1px;
+}
+
+.buyButton img {
+	vertical-align: middle;
+}
+
+
+a.boxclose{
+    float:right;
+    margin-top:-30px;
+    margin-right:-30px;
+    cursor:pointer;
+    color: #fff;
+    border: 1px solid #aeaeae;
+    border-radius: 20px;
+    background-color: #b33;
+    font-size: 20px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 11px 5px; 
+    padding: 8px 5px 12px 5px;
+	color: #eee;      
+}
+
+.boxclose:before {
+    content: "x";
+
+}
+
+.niceScroll::-webkit-scrollbar {
+width: 12px;
+}
+
+.niceScroll::-webkit-scrollbar-thumb {
+/* -webkit-border-radius: 10px; */
+border-radius: 10px;
+background: #eee;
+/* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); */
+}
+
+.niceScroll::-webkit-scrollbar-track {
+/* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); */
+-webkit-border-radius: 10px;
+border-radius: 10px;
+}
+
+
+</style>
+</head>
+<body>
+	<script src="game_json.js"></script>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.2/d3.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/masonry/3.1.2/masonry.pkgd.js"></script>
+	
+
+	<div id="mainbox">
+		<div id="left"><svg class="wheel"></svg></div>
+	    <div class="divider"></div>
+	    <div id="right" class="niceScroll">
+	    	<h1>Steam Wheel</h1>
+	    	<p>This is a <em>colour wheel for Steam games</em>. </p>
+	    	<p>Currently, stores like Steam offer fairly standard ways for dicsovering games - for example, sorting by name, genre or recent popularity/sales. There's very little else in the way to help you find games you might be interested in that aren't sourced from data of other users.</p>
+	    	<p>I'm really wary of crowdsourced content for discovery like this. My gut feeling is that a lot of the time they end up reinforcing demographics that already exist, and you never leave your bubble. A lot of crowdsourced metrics are participatory (Steam Metrics as an example) and skew the accuracy of the measurement. <a href="http://en.wikipedia.org/wiki/Francis_Galton">Sir Francis Galton's</a> anecdotal accurate measurement of an ox only works if all of the volunteers are actively attempting the same goal.</p>
+	    	<p>So, I tried to make something that would be objective but different to the current methods of sorting games. What this does is take a game's screenshots shown on Steam, find the most common colour in the image, and then bucket the images into this colour wheel. Clicking on any segment will show a whole bunch of screenshots with a similar colour scheme - if you're looking for an experience with a <a href="#" onclick="expandBucket( buckets[51] )">SEGA-like blue sky</a>, a <a href="#" onclick="expandBucket( buckets[96] )">neon dream</a> or <a href="#" onclick="expandBucket( buckets[45] )">verdant grassland</a>, you can search by colour.</p>
+	    </div>
+	</div>
+
+	<div id="gamecontainer">
+	<div id="midfloat">
+		<div id="midoff">
+			<div id="gamedetails">
+			<a class="boxclose" id="boxclose"></a>
+
+			<div class="gameDetailsHeader">
+				<div class="gameDetailsLeft"><div class="gameName"><h2></h2></div></div>
+				<div class="gameDetailsRight"><div class="buyButtonCont"><a href="#"><div class="buyButton"><img src="http://store.steampowered.com/favicon.ico" /> Buy on Steam</div></a></div></div>
+			</div>
+			<div>
+				<div class="gameDetailsLeft"><div class="bigScreen"><div class="bsItems"></div></div></div>
+				<div class="gameDetailsRight"><div class="gameShots niceScroll"></div></div>
+			</div>
+				
+			</div>
+		</div>
+	</div>
+	</div>
+
+	
+
+	<script>
+
+	Math.clamp = function(x,min, max) {
+	  return Math.min(Math.max(x, min), max);
+	};
+
+	function componentToHex(c) {
+	    var hex = c.toString(16);
+	    return hex.length == 1 ? "0" + hex : hex;
+	}
+
+	function rgbToHex(rgb) {
+	    return "#" + componentToHex(rgb.r) + componentToHex(rgb.g) + componentToHex(rgb.b);
+	}
+
+	function hslToRgb(hsl){
+		var h = hsl.h, s = hsl.s, l = hsl.l;
+	    var r, g, b;
+
+	    if(s == 0){
+	        r = g = b = l; // achromatic
+	    }else{
+	        function hue2rgb(p, q, t){
+	            if(t < 0) t += 1;
+	            if(t > 1) t -= 1;
+	            if(t < 1/6) return p + (q - p) * 6 * t;
+	            if(t < 1/2) return q;
+	            if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+	            return p;
+	        }
+
+	        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+	        var p = 2 * l - q;
+	        r = hue2rgb(p, q, h + 1/3);
+	        g = hue2rgb(p, q, h);
+	        b = hue2rgb(p, q, h - 1/3);
+	    }
+
+	    return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255)};
+	}
+
+	function hexToRgb(hex) {
+	    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+	    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+	    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+	        return r + r + g + g + b + b;
+	    });
+
+	    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	    return result ? {
+	        r: parseInt(result[1], 16),
+	        g: parseInt(result[2], 16),
+	        b: parseInt(result[3], 16)
+	    } : null;
+	}
+
+	function rgbToHSL(rgb)
+	{
+	    var r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+	    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+	    var h, s, l = (max + min) / 2;
+
+	    if(max == min){
+	        h = s = 0; // achromatic
+	    }else{
+	        var d = max - min;
+	        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+	        switch(max){
+	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+	            case g: h = (b - r) / d + 2; break;
+	            case b: h = (r - g) / d + 4; break;
+	        }
+	        h /= 6;
+	    }
+
+	    return {h: h, s: s, l: l};
+	}
+
+	var bucketHCount = 20;
+	var bucketSCount = 5;
+
+	var angleGap = (3 / 360)*(2*Math.PI);
+
+	var satGap = 2;
+
+	var satStart = 0.15;
+
+	var buckets = [];
+
+	var centralBucket = {};
+
+	var wheelRadius = 300;
+
+	var GameRefs = [];
+
+	function createBuckets()
+	{
+		centralBucket = { id: -1, name : "Greytown", description : "Here's where you'll find black and white games, and super-desaturated titles.", shots : [] };
+
+		for(var i=0; i<bucketSCount; i++)
+		{
+			for(var j=0; j<bucketHCount; j++)
+			{
+				var b = bucketID(j,i);
+				buckets[b] = { id: b, name : "", shots : [] };
+			}
+		}
+
+		buckets[51].name = "SEGA Blue Skies";
+		buckets[96].name = "Neon Dream";
+		buckets[45].name = "Green Green Grass";
+		buckets[22].name = "Brown Town";
+		buckets[81].name = "Fireball City";
+		buckets[30].name = "Deep Blue Sea";
+
+		SteamGames.forEach( function(game){
+			var gameName = game.name.trim();
+
+			if (gameName != "")
+			{
+				appShotID = 0;
+				game.pics.forEach( function( pic ) {
+					++appShotID;
+					if (pic.colours.length > 0)
+					{
+						var col = pic.colours[0]; // pick most dominant colour
+
+						hsl = rgbToHSL( hexToRgb( col ) );
+
+						// get the buckets
+						var hBucket = hueValueToBucket( hsl.h );
+						var sBucket = satValueToBucket( hsl.s );
+
+						var bucket = sBucket < 0? centralBucket : buckets[bucketID( hBucket, sBucket )];
+
+						bucket.shots.push( { shot: pic.shot, colour: col, app: game.appid, appshot: appShotID });
+					}
+				});
+
+				GameRefs[ game.appid ] = game;
+			}
+		 } );
+	}
+
+	var currentBucket = null;
+
+	var currentBigScreenImg = null;
+	var bigScreenImages = {};
+
+	function showBigScreenImg( newImg )
+	{
+		if (currentBigScreenImg == null || newImg != currentBigScreenImg.attr('src'))
+		{
+			var img = null;
+			if ( bigScreenImages[ newImg ] )
+			{
+				img = bigScreenImages[ newImg ];
+
+				img.fadeIn();
+			}
+			else
+			{
+				img = bigScreenImages[ newImg ] = $('<img>').addClass('bigScreenItem').attr('src', newImg).css('display', 'none');
+				$('#gamedetails .bigScreen .bsItems').append( img );
+
+				img.load( function( i ) {
+					img.fadeIn();
+				} );
+
+			}
+
+			if (currentBigScreenImg != null)
+			{
+				currentBigScreenImg.fadeOut("slow", function(){
+					currentBigScreenImg = img;
+				});
+			}
+			else
+			{
+				currentBigScreenImg = img;
+			}
+		}
+		
+	}
+
+	function hideGameContainer()
+	{
+		$('#gamecontainer').fadeOut("fast");
+	}
+	
+	function showGameContainer( appid )
+	{
+		var game = GameRefs[ appid ];
+
+		$('#gamedetails .gameName h2').text( game.name );
+
+		var first = null;
+
+		var gameShots = $('#gamedetails .gameShots');
+		gameShots.empty();
+		$('#gamedetails .bigScreen .bsItems').empty();
+		currentBigScreenImg = null;
+		bigScreenImages = {};
+
+		$('.buyButtonCont a').attr('href', 'http://store.steampowered.com/app/'+appid.toString());
+
+		game.pics.forEach( function( screenshot ) {
+			if (first == null)
+			{
+				first = 'http://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+screenshot.shot;
+			}
+
+			var shotName = screenshot.shot.split('.')[0];
+			var url = 'http://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+shotName+'.116x65.jpg';
+
+			var picHolder = $('<a>').attr('href', '#').click( function( ev ) {
+				ev.preventDefault();
+				showBigScreenImg( 'http://cdn.steampowered.com/v/gfx/apps/'+appid+'/'+screenshot.shot );
+
+			}).appendTo( gameShots );
+
+			$('<img>').attr('src', url).appendTo($('<div>').addClass('gameShotItem').appendTo( picHolder ) );
+
+		} );
+
+		showBigScreenImg( first );
+
+		$('#gamecontainer').fadeIn("fast");
+
+	}
+
+	function expandBucket( bucket )
+	{
+		var newBucket = $('<div>').attr('id', 'shotsFor'+bucket.id);
+
+		$('#right').append( newBucket );
+
+		$('<h1>').text(bucket.name).appendTo( newBucket );
+		$('<p>').text(bucket.description).appendTo( newBucket );
+		var shots = $('<div>').appendTo( newBucket )
+			.masonry({
+			  // options
+			  columnWidth: 200,
+			  itemSelector: '.listItem'
+			});
+
+		bucket.shots.forEach( function( shot )
+		{
+			var shotName = shot.shot.split('.')[0];
+			var url = 'http://cdn.steampowered.com/v/gfx/apps/'+shot.app.toString()+'/'+shotName+'.116x65.jpg';
+
+			var item = $('<div>').addClass('listItem')
+
+			$('<img>').attr('src', url).appendTo( 
+				$('<a>').attr('href',"#").click ( function( ev ) {
+					ev.preventDefault();
+
+					showGameContainer( shot.app );
+
+				} ).appendTo(item)
+			);
+
+			shots.append( item );
+		} );
+
+		if (currentBucket != null)
+		{
+			currentBucket.remove();
+		}
+
+		currentBucket = newBucket;
+	}
+
+
+
+	createBuckets();
+	$('#gamecontainer').hide();
+	$('#gamecontainer').click( function() {
+		hideGameContainer();
+	} );
+
+	$('#boxclose').click( function() {
+		hideGameContainer();
+	} );
+
+	$('#midoff').click( function( ev ) {
+		ev.stopPropagation();
+	} );
+
+	function hueValueToBucket( h )
+	{
+		return Math.round(h * (bucketHCount-1));
+	}
+
+	function satValueToBucket( s )
+	{
+		if (s < satStart) return -1;
+		else {
+			var normSat = (s - satStart) / (1-satStart);
+			return Math.round(normSat * (bucketSCount-1));
+		}
+	}
+
+	function bucketID( hueBucket, satBucket )
+	{
+		return hueBucket + satBucket * bucketHCount;
+	}
+
+	function hueBucket( i ) {
+		return i % bucketHCount;
+	}
+
+	function satBucket( i ){
+		return (i - hueBucket(i)) / bucketHCount;
+	}
+
+	
+	var chart = d3.select(".wheel")
+    	.attr("width", wheelRadius*2)
+    	.attr("height", wheelRadius*2);
+
+    var arcs = 
+    	chart.selectAll("g")
+    		.data(buckets)
+    	.enter().append("g")
+    		.attr("transform", "translate("+wheelRadius.toString()+","+wheelRadius.toString()+")");
+
+   	var central =
+   		chart.append("g")
+   			.attr("transform", "translate("+wheelRadius.toString()+","+wheelRadius.toString()+")");
+
+   	var centralA = central.append("a")
+    	.attr("xlink:href","#")
+    	.on("click", function( el ){ expandBucket( centralBucket ); } );
+
+    centralA.append("circle")
+    		.attr("r", satStart * wheelRadius - satGap)
+    		.attr("fill", "#444");
+    centralA.append("text")
+    		.attr("x", 0)
+    		.attr("y", 0)
+    		.attr("dy", ".35em")
+    		.text(centralBucket.shots.length.toString());
+
+    var arc = d3.svg.arc()
+    	.startAngle(
+    		function(d, i) { 
+    			var hue = hueBucket( i );
+    			var prop = Math.clamp((hue/(bucketHCount)), 0, 1);
+    			var angle = prop * 2 * Math.PI + angleGap/2; 
+
+    			return angle;
+    		})
+    	.endAngle(function(d, i) { 
+    			var hue = hueBucket( i ) + 1;
+    			var prop = Math.clamp((hue/(bucketHCount)), 0, 1);
+    			var angle = prop * 2 * Math.PI - angleGap/2; 
+
+    			return angle;
+    		})
+    	.innerRadius(function(d, i) { 
+    		var sat = satBucket( i );
+    		var prop = Math.clamp(sat/bucketSCount, 0, 1);
+    		prop = satStart + prop * (1-satStart);
+    		return prop * wheelRadius + satGap; 
+    	})
+    	.outerRadius(function(d, i) { 
+    		var sat = satBucket( i ) + 1;
+    		var prop = Math.clamp(sat/bucketSCount, 0, 1);
+    		prop = satStart + prop * (1-satStart);
+    		return prop * wheelRadius - satGap; 
+    	});
+
+
+   	var segmentA = arcs.append("a")
+    		.attr("xlink:href","#")
+    		.on("click", function( el ){ expandBucket( el ); } );
+
+    segmentA.append("path")
+    		.attr("d", arc)
+    		.attr("fill", function(d, i){ 
+	    		var hue = hueBucket( i );
+	    		var sat = satBucket( i );
+
+	    		var satProp = Math.clamp(sat/bucketSCount, 0, 1);
+	    		satProp = satStart + satProp * (1-satStart);
+	    			
+	    		var hsl = { h:Math.clamp(hue/bucketHCount, 0, 1), s:satProp, l:0.5 };
+	    		var col = rgbToHex( hslToRgb( hsl ) );
+	    		//console.log(col);
+	    		return col;
+	    	});
+
+    segmentA.append("text")
+    	.attr("x", function(d, i) { 
+
+    		var hue = hueBucket( i );
+    		var prop = Math.clamp((hue/(bucketHCount)), 0, 1);
+    		var angle = prop * 2 * Math.PI;
+    		angle += ((2*Math.PI)/bucketHCount) / 2; // offset to middle of segment
+
+    		var satProp = Math.clamp((satBucket(i) + 0.5)/bucketSCount, 0, 1);
+    		satProp = satStart + satProp * (1-satStart);
+    		return satProp * wheelRadius * Math.sin( angle );
+    	})
+    	.attr("y", function(d, i) { 
+
+    		var hue = hueBucket( i );
+    		var prop = Math.clamp((hue/(bucketHCount)), 0, 1);
+    		var angle = prop * 2 * Math.PI;
+    		angle += ((2*Math.PI)/bucketHCount) / 2; // offset to middle of segment
+
+    		var radius = (satBucket(i) + 0.5) * (wheelRadius / bucketSCount);
+
+    		var satProp = Math.clamp((satBucket(i) + 0.5)/bucketSCount, 0, 1);
+    		satProp = satStart + satProp * (1-satStart);
+    		return -satProp * wheelRadius * Math.cos( angle );
+    	})
+    	.attr("dy", ".35em")
+    	.text(function(d) { 
+    		return d.shots.length.toString(); 
+    	});
+
+    /*var arc = d3.svg.arc()
+    .innerRadius(50)
+    .outerRadius(70)
+    .startAngle(45 * (Math.PI/180)) //converting from degs to radians
+    .endAngle(3) //just radians
+
+    
+    
+	chart.append("path")
+	    .attr("d", arc)
+	    .attr("transform", "translate("+wheelRadius.toString()+","+wheelRadius.toString()+")")
+	    .attr("fill", rgbToHex( hslToRgb( hsl ) ) );*/
+	
+	</script>
+</body>
+</html>

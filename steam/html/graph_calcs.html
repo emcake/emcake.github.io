@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="game_recs.js"></script>
+<script>
+
+function getGraph()
+{
+  var g = {};
+  g.nodes = [];
+  g.links = [];
+
+  var refs = {};
+
+  g.maxCount = 0;
+
+  GameRecommends.forEach( function( app ) {
+    g.nodes.push( app );
+    refs[app.id] = g.nodes.length - 1;
+
+    g.nodes[ refs[app.id] ].count = 0;
+  } );
+
+  GameRecommends.forEach( function( app ) {
+    var mynum = refs[app.id];
+    app.similar.forEach( function( otherapp ) {
+      var theirnum = refs[otherapp.toString()];
+      if (theirnum != undefined)
+      {
+         g.links.push( {"source" : mynum, "target" : theirnum, "value" : 1} );
+         g.nodes[ theirnum ].count++;
+      }
+     
+    } );
+  } );
+
+  g.nodes.forEach( function( n ) {
+    g.maxCount = Math.max( n.count, g.maxCount );
+  } );
+
+  return g;
+}
+
+var graph = getGraph();
+
+var noCounts = 0;
+
+var countSum = 0;
+
+counts = [];
+
+graph.nodes.forEach( function( node ) { if (node.count == 0) { noCounts++; } countSum += node.count; counts.push( node.count ); });
+
+var avgCount = countSum / graph.nodes.length;
+
+alert( avgCount );
+
+alert( noCounts );
+
+function median(values) {
+ 
+    values.sort( function(a,b) {return a - b;} );
+ 
+    var half = Math.floor(values.length/2);
+ 
+    if(values.length % 2)
+        return values[half];
+    else
+        return (values[half-1] + values[half]) / 2.0;
+}
+
+var medCount = median( counts );
+
+</script>
+</body>
+</html>

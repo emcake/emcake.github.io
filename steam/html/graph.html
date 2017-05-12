@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+#svg_container {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+#text_container {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  height: 100%;
+  width: 33%;
+
+  padding-left: 10px;
+
+  background-color: #222;
+  border-left: 1px solid #333;
+  color: #eee;
+  opacity: 0.9;
+  
+}
+
+</style>
+<body>
+
+<div id="svg_container">
+</div>
+<div id="text_container">
+  <h1>Steam's Recommendation Engine</h1>
+  <p>Here's a graph showing the connections made by Steam's 'More Like This' box at the bottom of a game listing.</p>
+  <p>Creating recommendations based on similar products is a reasonably common idea for digital stores. Primarily, they work off semantic tagging (of some sort) of each item, and then trying to produce 'similar' items for a listing by finding items that have been tagged similarly.</p>
+  <p>Both Amazon and Steam are explicit about how their systems work - Amazon lists theirs as 'Other Shoppers Also Viewed', and in some cases even lists the products they ended up buying. Steam have a 'More Like This' page for each app, which states that the recommendations come from the tags users have applied to other games.</p>
+  <p>This graphs show various games (the nodes) and the games they recommend (the links). The size of the node represents the number of incoming links to a given game.</p>
+  <p>It should be immediately noticeable that there's a few 'hub' games - games that have a lot of incoming links. DOTA 2 seems to 'win' this category - it has 910 incoming links and is clearly visible on the graph. DayZ, Rust, CS:GO and TF2 all how up heavily in recommendations as well.</p>
+  <p>At the other end of the spectrum, there's games that aren't ever recommended. Out of the <span id="gameCount">1234</span> games listed here, <span id="nullGameCount">5678</span> have no recommendations - that's about <span id="nullPc">0</span>% of the entire Steam collection. Conversely, the top 1% of games are pointed to by <span id="linkCount"></span> of the total <span id="linkTotCount"></span> links - <span id="linkPC"></span>% of the total.</p>
+  <p>Is this a problem? I don't know. It seems weird it's so heavily skewed in terms of so few games. My gut feeling says that, as Steam opens up, this will skew even higher, and is slowly pushing more of the problem of discovery onto users.</p>
+</div>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="game_recs.js"></script>
+<script>
+
+function getGraph()
+{
+  var g = {};
+  g.nodes = [];
+  g.links = [];
+
+  var refs = {};
+
+  g.maxCount = 0;
+
+  GameRecommends.forEach( function( app ) {
+    g.nodes.push( app );
+    refs[app.id] = g.nodes.length - 1;
+
+    g.nodes[ refs[app.id] ].inwardLinkCount = 0;
+  } );
+
+  GameRecommends.forEach( function( app ) {
+    var mynum = refs[app.id];
+
+    var recid = 0;
+
+    app.similar.forEach( function( otherapp ) {
+      var theirnum = refs[otherapp.toString()];
+      if (theirnum != undefined)
+      {
+         g.links.push( {"source" : g.nodes[mynum], "target" : g.nodes[theirnum], "value" : 1, "recid" : recid} );
+         g.nodes[ theirnum ].inwardLinkCount++;
+         recid++;
+      }
+     
+    } );
+  } );
+
+  g.nodes.forEach( function( n ) {
+    g.maxCount = Math.max( n.inwardLinkCount, g.maxCount );
+  } );
+
+  return g;
+}
+
+function reduceGraph(g, min_count, max_recs)
+{
+  var gg = {};
+  gg.nodes = g.nodes.filter( function( n ) { return n.inwardLinkCount > min_count; } );
+  gg.links = g.links.filter( function( l ) { return l.recid < max_recs && l.source.inwardLinkCount > min_count && l.target.inwardLinkCount > min_count; });
+  gg.maxCount = g.maxCount;
+
+  return gg;
+}
+
+function getStats( g )
+{
+  var noCounts = 0;
+  var counts = [];
+  g.nodes.forEach( function( node ) { if (node.inwardLinkCount == 0) { noCounts++; } counts.push( node.inwardLinkCount ); });
+
+  counts.sort(function(a,b){return b-a});
+
+  var top1 = counts.splice( 0, Math.round( counts.length / 100 ) );
+
+  var top1count = 0;
+  top1.forEach( function( node ) { top1count += node; } );
+
+  $('#gameCount').text(g.nodes.length);
+
+  $('#nullGameCount').text(noCounts);
+
+  $('#nullPc').text( Math.round( noCounts * 100 / g.nodes.length ) );
+
+  $('#linkCount').text(top1count);
+
+  $('#linkTotCount').text(g.links.length);
+
+  $('#linkPC').text( Math.round( top1count * 100 / g.links.length ) );
+}
+
+var urGraph = getGraph();
+
+getStats( urGraph );
+
+var graph = undefined;
+
+
+
+var width = 1600,
+    height = 900;
+
+var color = d3.scale.category20();
+
+var x = d3.scale.linear()
+    .domain([0, width])
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .domain([0, height])
+    .range([height, 0]);
+
+var force = d3.layout.force()
+    .charge(-120)
+    .linkDistance(30)
+    .size([width, height]);
+
+var svg = d3.select("#svg_container").append("svg")
+    .attr("width", '100%')
+    .attr("height", '100%')
+  .append("g")
+    .call(d3.behavior.zoom().x(x).y(y).scaleExtent([0.2, 8]).on("zoom", zoom))
+  .append("g");
+
+updateNodes( reduceGraph( urGraph, 0, 3 ) );
+
+function updateNodes( g )
+{
+  var rad = d3.scale.log().domain([1, g.maxCount+1]).range([2, 10]);
+
+  force
+      .nodes(g.nodes)
+      .links(g.links)
+      .start();
+
+  var link = svg.selectAll(".link")
+      .data(g.links);
+    link.enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", function(d) { return Math.sqrt(d.value); })
+      .attr("transform", function(d) { return "translate(" + d + ")"; });
+    link.exit()
+      .remove();
+
+  var node = svg.selectAll(".node")
+      .data(g.nodes);
+    node.enter().append("circle")
+      .attr("class", "node")
+      .attr("r", function(d) { return rad(d.inwardLinkCount + 1); })
+      .attr("transform", function(d) { return "translate(" + d + ")"; })
+      .style("fill", function(d) { var t = (d.tags.length > 0) ? d.tags[0] : ""; return color( t ); }) // TODO make this colour based on tags
+    node.exit()
+      .remove();
+
+  node.append("title")
+      .text(function(d) { 
+        var n = d.name+" : "+d.inwardLinkCount;
+        if (d.tags.length > 0) n = n+" ("+d.tags[0]+")";
+        return n; });
+
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; })
+
+    node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  });
+
+  graph = g;
+}
+
+
+
+
+
+
+function zoom() {
+  svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+</script>
+</body>
+</html>

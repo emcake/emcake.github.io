@@ -1,0 +1,228 @@
+<html>
+<head>
+<title>List test</title>
+<style>
+.palette-box
+{
+	width: 50px;
+	height: 50px;
+	display: inline-block;
+}
+
+body
+{
+	background-color: #222;
+	font-family: sans-serif;
+}
+
+a
+{
+	color: #eee;
+	text-decoration: none;
+}
+
+ul
+{
+	
+}
+
+li
+{
+	list-style-type: none;
+	margin-left: : 10px;
+
+	border-bottom-style:solid; 
+	border-bottom-width:1px; 
+	border-bottom-color:#999;
+}
+
+li:hover
+{
+
+}
+</style>
+</head>
+<body>
+	<script src="game_json.js"></script>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+	<a href="#" onclick="sortList('#gamelist', 'data-appid', parseInt)">Sort by AppID</a>  <a href="#" onclick="sortList('#gamelist', 'data-name')">Sort by Name</a>  <a href="#" onclick="sortList('#gamelist', 'data-avgsat', parseFloat)">Sort by Average Saturation</a>   <a href="#" onclick="sortList('#gamelist', 'data-avgcolourcount', parseFloat)">Sort by Colour Count</a>   <a href="#" onclick="sortList('#gamelist', 'data-avghue', parseFloat)">Sort by Hue</a>   <a href="#" onclick="sortList('#gamelist', 'data-huevariance', parseFloat)">Sort by Hue Variance</a>
+
+	<ul id="gamelist">
+	</ul>
+
+	<script>
+	function hexToRgb(hex) {
+	    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+	    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+	    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+	        return r + r + g + g + b + b;
+	    });
+
+	    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	    return result ? {
+	        r: parseInt(result[1], 16),
+	        g: parseInt(result[2], 16),
+	        b: parseInt(result[3], 16)
+	    } : null;
+	}
+
+	function rgbToHSL(rgb)
+	{
+	    var r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
+	    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+	    var h, s, l = (max + min) / 2;
+
+	    if(max == min){
+	        h = s = 0; // achromatic
+	    }else{
+	        var d = max - min;
+	        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+	        switch(max){
+	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+	            case g: h = (b - r) / d + 2; break;
+	            case b: h = (r - g) / d + 4; break;
+	        }
+	        h /= 6;
+	    }
+
+	    return {h: h, s: s, l: l};
+	}
+
+	function expand( id ) {
+		var item = $('#'+id);
+		if (item.hasClass('expanded') != true)
+		{
+			var ref = GameRefs[ id ];
+			var screenshots = $('<ul>').attr('class', 'screenshot_list').appendTo( item );
+			ref.pics.forEach( function( pic ) {
+				var shotName = pic.shot.split('.')[0];
+				var url = 'http://cdn.steampowered.com/v/gfx/apps/'+id.toString()+'/'+shotName+'.116x65.jpg';
+				var shotItem = $('<li>').append($('<img>').attr('src', url)).appendTo(screenshots);
+				pic.colours.forEach( function( colour ) {
+					$('<span>').css( "background-color" , "#"+colour ).addClass('palette-box').appendTo(shotItem);
+				});
+			});
+		}
+		item.addClass('expanded');
+	}
+
+	function getGameMetadata( game ) {
+		metaData = {};
+
+		metaData.appid = game.appid;
+		metaData.name = game.name;
+
+		// get avg saturation
+		var sumSat = 0;
+
+		var hueSinSum = 0;
+		var hueCosSum = 0;
+
+		var hueVarSum = 0;
+
+		var colourCount = 0;
+		var imageCount = 0;
+
+		game.pics.forEach( function( pic ) {
+
+			imageCount++;
+
+			var imgSinSum = 0;
+			var imgCosSum = 0;
+
+			var imageColourCount = 0;
+
+			pic.colours.forEach( function(colour){
+				colourCount++;
+				imageColourCount++;
+				var hsl = rgbToHSL( hexToRgb( colour ) );
+				sumSat += hsl.s;
+
+				var hueAngle = Math.PI * 2 * hsl.h;
+
+				imgSinSum += Math.sin( hueAngle );
+				imgCosSum += Math.cos( hueAngle );
+			});
+
+			var imgAvgSin = imgSinSum / imageColourCount;
+			var imgAvgCos = imgCosSum / imageColourCount;
+
+			var vectorLength = Math.sqrt( imgAvgSin * imgAvgSin + imgAvgCos * imgAvgCos );
+			hueVarSum += 1 - vectorLength;
+
+			hueSinSum += imgSinSum;
+			hueCosSum += imgCosSum;
+
+		 } );
+
+		var avgSin = hueSinSum / colourCount;
+		var avgCos = hueCosSum / colourCount;
+
+		metaData.avgColourCount = colourCount / imageCount;
+		metaData.avgSat = sumSat / colourCount;
+
+		var avgHue = Math.atan2( avgSin, avgCos ) / (Math.PI*2);
+		metaData.avgHue = (avgHue + (Math.PI*2)) % (Math.PI*2);
+
+		
+		metaData.hueVariance = hueVarSum / imageCount;
+
+		return metaData;
+	}
+
+	var GameRefs = [];
+	
+	function loadGames() {
+		var gameList = $('#gamelist');
+
+		SteamGames.forEach( function( game ) {
+			var gameEntry = $('<li>');
+			var gameName = game.name.trim();
+
+			if (gameName != "")
+			{
+				gameEntry.attr('id', game.appid);
+
+				var metaData = getGameMetadata( game );
+
+				for (var item in metaData)
+				{
+					gameEntry.attr('data-'+item, metaData[item]);
+				}
+
+				$('<a>').attr('href', 'http://store.steampowered.com/app/'+game.appid.toString()).html(gameName).appendTo(gameEntry);
+				$('<a>').attr('href', '#').click( function(e) { e.preventDefault(); expand( game.appid.toString() );} ).html('+').addClass('expand-button').attr('id', 'expand-'+game.appid.toString()).appendTo(gameEntry);
+
+				gameEntry.appendTo( gameList );
+
+				GameRefs[ game.appid ] = game;
+			}
+		} );
+	}
+
+	function sortList( listID, category, coercion ) {
+
+		var items = $(listID).children().sort(function(a, b) {
+        	var vA = $(a).attr(category);
+       		var vB = $(b).attr(category);
+
+       		if (coercion)
+       		{
+       			vA = coercion( vA );
+       			vB = coercion( vB );
+       		}
+        	return (vA < vB) ? -1 : (vA > vB) ? 1 : 0;
+    	});
+
+    	$(listID).append( items );
+	}
+
+	$(document).ready( function(){
+
+		loadGames();
+	});
+	</script>
+</body>
+</html>
